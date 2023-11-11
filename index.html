@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <label for="FnameInp">First Name</label>
+    <input type="text" id="FnameInp" />
+    <br />
+    <br />
+    <label for="LnameInp">Last Name</label>
+    <input type="text" id="LnameInp" />
+    <br />
+    <br />
+    <label>Department</label>
+    <select id="deptInp">
+      <option value="development">development</option>
+      <option value="marketing">marketing</option>
+      <option value="management">management</option>
+      <option value="administration">administration</option>
+    </select>
+    <br />
+    <br />
+    <label>can swim?</label>
+    <select id="swimInp">
+      <option value="yes">yes</option>
+      <option value="no">no</option>
+    </select>
+    <br />
+    <br />
+    <label>CNIC no.</label>
+    <input type="number" id="CnicInp" />
+    <br />
+    <br />
+    <button id="AddBtn">Add</button>
+    <button id="retriveBtn">retrive</button>
+    <button id="updateBtn">update</button>
+    <button id="deleteBtn">delete</button>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBNAHOiU_EmGlo6vVWMC_5_v9W2WxMJ4sg",
+        authDomain: "form-submit-90e90.firebaseapp.com",
+        databaseURL: "https://form-submit-90e90-default-rtdb.firebaseio.com",
+        projectId: "form-submit-90e90",
+        storageBucket: "form-submit-90e90.appspot.com",
+        messagingSenderId: "272064779123",
+        appId: "1:272064779123:web:46bc1d4709d9a36e6a6b06",
+      };
+
+      const app = initializeApp(firebaseConfig);
+
+      import {
+        getDatabase,
+        ref,
+        child,
+        get,
+        set,
+        update,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+
+      const db = getDatabase();
+      let FnameInp = document.getElementById("FnameInp");
+      let LnameInp = document.getElementById("LnameInp");
+      let deptInp = document.getElementById("deptInp");
+      let swimInp = document.getElementById("swimInp");
+      let CnicInp = document.getElementById("CnicInp");
+
+      let AddBtn = document.getElementById("AddBtn");
+      let retriveBtn = document.getElementById("retriveBtn");
+      let updateBtn = document.getElementById("updateBtn");
+      let deleteBtn = document.getElementById("deleteBtn");
+
+      function addData() {
+        set(ref(db, "Employees/" + CnicInp.value), {
+          firstName: FnameInp.value,
+          lastName: LnameInp.value,
+          department: deptInp.value,
+          canSwim: swimInp.value === "yes",
+          cnic: CnicInp.value,
+        })
+          .then(() => alert("data added successfully!"))
+          .catch(() => alert("unsuccessful!"));
+      }
+
+      function retData() {
+        get(ref(db, "Employees/" + CnicInp.value))
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              FnameInp.value = snapshot.val().firstName;
+              LnameInp.value = snapshot.val().lastName;
+              deptInp.value = snapshot.val().department;
+              swimInp.value = snapshot.val().canSwim ? "yes" : "no";
+            } else {
+              alert("employee doesn't exist");
+            }
+          })
+          .catch(() => alert("unsuccesful"));
+      }
+
+      function updateData() {
+        update(ref(db, "Employees/" + CnicInp.value), {
+          firstName: FnameInp.value,
+          lastName: LnameInp.value,
+          department: deptInp.value,
+          canSwim: swimInp.value === "yes",
+        })
+          .then(() => alert("data updated successfully!"))
+          .catch(() => alert("unsuccessful!"));
+      }
+
+      function delData() {
+        remove(ref(db, "Employees/" + CnicInp.value))
+          .then(() => alert("data removed successfully!"))
+          .catch(() => alert("unsuccessful!"));
+      }
+
+      AddBtn.addEventListener("click", addData);
+      retriveBtn.addEventListener("click", retData);
+      updateBtn.addEventListener("click", updateData);
+      deleteBtn.addEventListener("click", delData);
+    </script>
+  </body>
+</html>
